@@ -1,0 +1,13 @@
+- name: 将tomcat压缩包copy到远程主机 apache-tomcat-9.0.14.tar.gz
+  copy: src=apache-tomcat-{{ tomcat_version }}.tar.gz dest=/usr/local
+- name: 解压tomcat压缩包apache-tomcat-9.0.14.tar.gz
+  shell: cd /usr/local && tar -zxvf apache-tomcat-{{ tomcat_version }}.tar.gz
+- name: 将tomcat压缩包 重新命名为 tomcat
+  file: src=/usr/local/apache-tomcat-{{ tomcat_version }} dest=/usr/local/tomcat state=link
+- name: add /etc/profile
+  shell: chdir=/usr/local/tomcat/bin sed -i '1a source /etc/profile' startup.sh
+- name: 首次启动tomcat
+  shell: chdir=/usr/local/tomcat/bin nohup ./catalina.sh start &
+- name: remove apache-tomcat-9.0.14.tar.gz
+  file: path=/usr/local/apache-tomcat-{{ tomcat_version }}.tar.gz state=absent
+
